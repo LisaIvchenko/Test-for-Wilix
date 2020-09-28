@@ -1,0 +1,44 @@
+<div class="container">
+  <h1>Состояние платежей</h1>
+  <form [formGroup]="formPayment"
+        (ngSubmit)="createPayment()">
+    <input type="text"
+           placeholder="Наименование платежа*"
+           formControlName="title"
+           class="form-input"
+           [ngClass]="{'invalid': formPayment.controls.title.invalid && formPayment.controls.title.touched}">
+    <input type="number"
+           placeholder="Стоимость за день"
+           formControlName="price"
+           class="form-input"
+           [ngClass]="{'invalid': formPayment.controls.price.invalid && formPayment.controls.price.touched}">
+    <button class="add-btn"
+            [disabled]="formPayment.invalid"
+            (click)="markFormGroupTouched(formPayment)">Добавить</button>
+  </form>
+  <table>
+    <tr>
+      <th>Наименование платежа</th>
+      <th>Стоимость</th>
+      <th *ngFor="let month of months">
+        {{ month }}
+      </th>
+      <th>Удалить</th>
+    </tr>
+    <tr *ngFor="let payment of payments">
+      <td>{{ payment.title }}</td>
+      <td>{{ payment.price }}</td>
+      <td *ngFor="let monthCheckbox of payment.months">
+        <input type="checkbox"
+               [checked]="monthCheckbox.isPayed"
+               (change)="changePayment($event, payment.price, monthCheckbox.monthNum)">
+      </td>
+      <td>
+        <button class="delete-btn"
+                (click)="deletePayment(payment)"></button>
+      </td>
+    </tr>
+  </table>
+  <span>Израсходовано средств: {{ total }}</span>
+</div>
+
