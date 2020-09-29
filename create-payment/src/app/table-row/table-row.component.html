@@ -1,0 +1,13 @@
+<tr>
+  <td>{{ payment.title }}</td>
+  <td>{{ payment.price }}</td>
+  <td *ngFor="let monthCheckbox of payment.months">
+    <input type="checkbox"
+           [checked]="monthCheckbox.isPayed"
+           (change)="changePayment($event, payment, monthCheckbox)">
+  </td>
+  <td>
+    <button class="delete-btn"
+            (click)="deletePayment(payment)"></button>
+  </td>
+</tr>

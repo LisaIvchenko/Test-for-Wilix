@@ -1,8 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {IMonthPayment, IPayment, payments, emptyMonths} from './data';
-import {FormGroup} from '@angular/forms';
-
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +16,7 @@ export class PaymentsService {
   }
 
   public getTotal(): number {
-    this.getPayments().subscribe(
-      res => {
-        this.total = res.reduce((acc, prev) => acc + this.countTotalOfPayment(prev.months, prev.price), 0);
-      });
-    return this.total;
+    return this.payments.reduce((acc, prev) => acc + this.countTotalOfPayment(prev.months, prev.price), 0);
   }
 
   public countTotalOfPayment(monthsData: IMonthPayment[], price: number): number {
@@ -42,8 +36,8 @@ export class PaymentsService {
     this.payments = this.payments.filter(el => el.title !== payment.title);
   }
 
-  public createPayment(formPayment: FormGroup): void {
-    const newPayment: IPayment = {...formPayment.value, months: this.emptyMonths};
+  public createPayment(formPayment: {title: string; price: number}): void {
+    const newPayment: IPayment = {...formPayment, months: this.emptyMonths};
     this.payments.push(newPayment);
   }
 

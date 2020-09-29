@@ -13,8 +13,7 @@
            class="form-input"
            [ngClass]="{'invalid': formPayment.controls.price.invalid && formPayment.controls.price.touched}">
     <button class="add-btn"
-            [disabled]="formPayment.invalid"
-            (click)="markFormGroupTouched(formPayment)">Добавить
+            [disabled]="formPayment.invalid">Добавить
     </button>
   </form>
   <table>
@@ -26,20 +25,10 @@
       </th>
       <th>Удалить</th>
     </tr>
-    <tr *ngFor="let payment of payments">
-      <td>{{ payment.title }}</td>
-      <td>{{ payment.price }}</td>
-      <td *ngFor="let monthCheckbox of payment.months">
-        <input type="checkbox"
-               [checked]="monthCheckbox.isPayed"
-               (change)="changePayment($event, payment, monthCheckbox)">
-      </td>
-      <td>
-        <button class="delete-btn"
-                (click)="deletePayment(payment)"></button>
-      </td>
-    </tr>
+    <app-table-row *ngFor="let payment of payments"
+                   [payment]="payment"
+                   (updateTable)="updateTable()"></app-table-row>
   </table>
-  <span>Израсходовано средств: {{ total$ | async }}</span>
+  <span>Израсходовано средств: {{ total }}</span>
 </div>
 
