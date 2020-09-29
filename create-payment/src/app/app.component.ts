@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {emptyMonths, IMonthPayment, IPayment, months, payments} from './data';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {PaymentsService} from './payments.service';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -8,16 +10,17 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  public payments = payments;
+  public payments: IPayment[];
   public months = months;
-  public total = 0;
-  public emptyMonths = emptyMonths;
+  public total$ = new BehaviorSubject<number>(0);
   public formPayment: FormGroup;
 
-  constructor() {
+  constructor(private paymentsService: PaymentsService) {
   }
 
   public ngOnInit(): void {
+    this.getPayments();
+    this.getTotal();
     this.formPayment = new FormGroup({
       title: new FormControl('', [
         Validators.required,
@@ -27,37 +30,37 @@ export class AppComponent implements OnInit {
         Validators.required,
       ])
     });
-    this.payments.forEach(el => this.total += this.countTotalOfPayment(el.months, el.price));
   }
 
-  public changePayment(event, price: number, monthNum: number): void {
-    const monthPayment = this.daysInMonth(monthNum) * price;
-    event.currentTarget.checked ? this.total += monthPayment : this.total -= monthPayment;
+  public getPayments(): void {
+    this.paymentsService.getPayments().subscribe(
+      res => this.payments = res
+    );
   }
 
-  public daysInMonth(monthNumber: number): number {
-    const year = new Date().getFullYear();
-    return new Date(year, monthNumber, 0).getDate();
+  public getTotal(): void {
+    this.total$.next(this.paymentsService.getTotal());
   }
 
-  public countTotalOfPayment(monthsData: IMonthPayment[], price: number): number {
-    return price * monthsData
-      .filter(el => el.isPayed)
-      .map(el => this.daysInMonth(el.monthNum))
-      .reduce((acc, curr) => acc + curr, 0);
+  public changePayment(event, payment: IPayment, monthCheckbox: IMonthPayment): void {
+    this.paymentsService.changePayment(event.target.checked, payment, monthCheckbox.monthNum);
+    this.getTotal();
+    this.getPayments();
   }
 
   public deletePayment(payment: IPayment): void {
-    this.payments = this.payments.filter(el => el.title !== payment.title);
-    this.total -= this.countTotalOfPayment(payment.months, payment.price);
+    this.paymentsService.deletePayment(payment);
+    this.getTotal();
+    this.getPayments();
   }
 
   public createPayment(): void {
     if (this.formPayment.valid) {
-      const newPayment: IPayment = {...this.formPayment.value, months: this.emptyMonths};
-      this.payments.push(newPayment);
+      this.paymentsService.createPayment(this.formPayment);
       this.formPayment.reset();
     }
+    this.getPayments();
+    this.getTotal();
   }
 
   public markFormGroupTouched(formGroup: FormGroup): void {

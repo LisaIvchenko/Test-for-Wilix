@@ -14,7 +14,8 @@
            [ngClass]="{'invalid': formPayment.controls.price.invalid && formPayment.controls.price.touched}">
     <button class="add-btn"
             [disabled]="formPayment.invalid"
-            (click)="markFormGroupTouched(formPayment)">Добавить</button>
+            (click)="markFormGroupTouched(formPayment)">Добавить
+    </button>
   </form>
   <table>
     <tr>
@@ -31,7 +32,7 @@
       <td *ngFor="let monthCheckbox of payment.months">
         <input type="checkbox"
                [checked]="monthCheckbox.isPayed"
-               (change)="changePayment($event, payment.price, monthCheckbox.monthNum)">
+               (change)="changePayment($event, payment, monthCheckbox)">
       </td>
       <td>
         <button class="delete-btn"
@@ -39,6 +40,6 @@
       </td>
     </tr>
   </table>
-  <span>Израсходовано средств: {{ total }}</span>
+  <span>Израсходовано средств: {{ total$ | async }}</span>
 </div>
 
