@@ -14,10 +14,14 @@ export class AppComponent implements OnInit {
   public formPayment: FormGroup;
 
   constructor(private paymentsService: PaymentsService) {
+    this.createForm();
   }
 
   public ngOnInit(): void {
     this.updateTable();
+  }
+
+  public createForm(): void {
     this.formPayment = new FormGroup({
       title: new FormControl('', [
         Validators.required,

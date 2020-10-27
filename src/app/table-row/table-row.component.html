@@ -1,7 +1,7 @@
 <tr>
-  <td>{{ payment.title }}</td>
-  <td>{{ payment.price }}</td>
-  <td *ngFor="let monthCheckbox of payment.months">
+  <td>{{ payment?.title }}</td>
+  <td>{{ payment?.price }}</td>
+  <td *ngFor="let monthCheckbox of payment?.months">
     <input type="checkbox"
            [checked]="monthCheckbox.isPayed"
            (change)="changePayment($event, payment, monthCheckbox)">
