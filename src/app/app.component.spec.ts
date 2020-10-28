@@ -3,8 +3,6 @@ import { AppComponent } from './app.component';
 import { Observable, of } from 'rxjs';
 import { IPayment } from './data';
 import { PaymentsService } from './payments.service';
-import { FormControl, Validators } from '@angular/forms';
-import { Test } from 'tslint';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
@@ -49,6 +47,7 @@ describe('AppComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(AppComponent);
   });
+
 
   it('should create the app', () => {
     const app = fixture.componentInstance;

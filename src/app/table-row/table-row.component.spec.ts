@@ -2,14 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TableRowComponent } from './table-row.component';
 import { IMonthPayment, IPayment } from '../data';
-import { Observable, of } from 'rxjs';
 import { PaymentsService } from '../payments.service';
 import { EventEmitter } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
 describe('TableRowComponent', () => {
   let fixture: ComponentFixture<TableRowComponent>;
-  let service: MockService;
+  let service: PaymentsService;
   const payment = {
     title: 'Интернет',
     price: 600,
@@ -65,16 +64,62 @@ describe('TableRowComponent', () => {
     ]
   };
 
-  const demoPayments: IPayment[] = [{
-    title: 'Интернет',
-    price: 600,
-    months: [
-      {
-        monthNum: 1,
-        isPayed: false,
-      },
-    ],
-  }];
+  const demoPayments: IPayment[] = [
+    {
+      title: 'TV',
+      price: 100,
+      months: [
+        {
+          monthNum: 1,
+          isPayed: false
+        },
+        {
+          monthNum: 2,
+          isPayed: true
+        },
+        {
+          monthNum: 3,
+          isPayed: false
+        },
+        {
+          monthNum: 4,
+          isPayed: false
+        },
+        {
+          monthNum: 5,
+          isPayed: true
+        },
+        {
+          monthNum: 6,
+          isPayed: false
+        },
+        {
+          monthNum: 7,
+          isPayed: false
+        },
+        {
+          monthNum: 8,
+          isPayed: false
+        },
+        {
+          monthNum: 9,
+          isPayed: false
+        },
+        {
+          monthNum: 10,
+          isPayed: false
+        },
+        {
+          monthNum: 11,
+          isPayed: false
+        },
+        {
+          monthNum: 12,
+          isPayed: false
+        }
+      ]
+    }
+  ];
 
   const trueEvent = {
     target: {
@@ -93,32 +138,22 @@ describe('TableRowComponent', () => {
     isPayed: false,
   };
 
-  class MockService {
-    public createdPayment: IPayment;
-
-    public getPayments(): Observable<IPayment[]> {
-      return of(demoPayments) as any;
-    }
-
-    public getTotal(): number {
-      return demoPayments.length;
-    }
-
-    public createPayment(data): void {
-      this.createdPayment = data;
-    }
-  }
-
   beforeEach(async () => {
-    service = new MockService();
     await TestBed.configureTestingModule({
       declarations: [TableRowComponent],
       providers: [
-        {provide: PaymentsService, useValue: service},
+        {
+          provide: PaymentsService,
+          useValue: {
+            changePayment: jasmine.createSpy('changePayment'),
+            deletePayment: jasmine.createSpy('deletePayment'),
+          }
+        },
       ],
     })
       .compileComponents();
     fixture = TestBed.createComponent(TableRowComponent);
+    service = TestBed.inject(PaymentsService);
   });
 
   beforeEach(() => {
@@ -147,8 +182,9 @@ describe('TableRowComponent', () => {
     expect(component.updateTable).toBeInstanceOf(EventEmitter);
   });
 
-  it('при нажатии на кнопку с селектором .change-payment-checkbox ' +
-    'должен вызываться метод changePayment и срабатывать собстевнное событие updateTable',
+  it('при нажатии на input с селектором .change-payment-checkbox ' +
+    'должен вызываться метод changePayment, внутри которого происходит обращение к методу changePayment в service ' +
+    'и срабатывает собстевнное событие updateTable',
     () => {
       const component = fixture.componentInstance;
       component.payment = payment;
@@ -156,29 +192,27 @@ describe('TableRowComponent', () => {
       spyOn(component, 'changePayment').and.callThrough();
       spyOn(component?.updateTable, 'emit').and.callThrough();
       const checkbox = fixture.debugElement.queryAll(By.css('input.change-payment-checkbox'))[0];
-      console.log(checkbox);
-
-      checkbox.triggerEventHandler('change', payment.months[0].isPayed);
+      checkbox.nativeElement.click();
       expect(component?.changePayment).toHaveBeenCalledTimes(1);
+      expect(service.changePayment).toHaveBeenCalledTimes(1);
       expect(component?.updateTable.emit).toHaveBeenCalledTimes(1);
     });
 
-  // it('changePayment', () => {
-  //   const app = fixture.componentInstance;
-  //   app.changePayment(trueEvent, demoPayments[0], monthPayment);
-  //   expect(app.total).toEqual(demoPayments.length);
-  // });
+  it('при нажатии на кнопку с селектором .delete-btn ' +
+    'должен вызываться метод deletePayment, внутри которого происходит обращение к методу deletePayment в service ' +
+    'и срабатывает собстевнное событие updateTable',
+    () => {
+      const component = fixture.componentInstance;
+      component.payment = payment;
+      fixture.detectChanges();
+      spyOn(component, 'deletePayment').and.callThrough();
+      // spyOn(service, 'deletePayment').and.callThrough();
+      spyOn(component?.updateTable, 'emit').and.callThrough();
+      const checkbox = fixture.debugElement.queryAll(By.css('.delete-btn'))[0];
+      checkbox.nativeElement.click();
+      expect(component?.deletePayment).toHaveBeenCalledTimes(1);
+      expect(service.deletePayment).toHaveBeenCalledTimes(1);
+      expect(component?.updateTable.emit).toHaveBeenCalledTimes(1);
+    });
 
-  // it('should emit on click', () => {
-  //   spyOn(component.updateTable, 'emit');
-  //
-  //   // trigger the click
-  //   const nativeElement = fixture.nativeElement;
-  //   const button = nativeElement.querySelector('button');
-  //   button.dispatchEvent(new Event('click'));
-  //
-  //   fixture.detectChanges();
-  //
-  //   expect(component.updateTable.emit).toHaveBeenCalledWith();
-  // });
 });
