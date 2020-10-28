@@ -1,6 +1,6 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {IMonthPayment, IPayment} from '../data';
-import {PaymentsService} from '../payments.service';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { IMonthPayment, IPayment } from '../data';
+import { PaymentsService } from '../payments.service';
 
 @Component({
   selector: 'app-table-row',
@@ -10,9 +10,10 @@ import {PaymentsService} from '../payments.service';
 export class TableRowComponent {
 
   @Input() public payment: IPayment;
-  @Output() public updateTable = new EventEmitter<any>();
+  @Output() public updateTable: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private paymentsService: PaymentsService) { }
+  constructor(private paymentsService: PaymentsService) {
+  }
 
   public changePayment(event, payment: IPayment, monthCheckbox: IMonthPayment): void {
     this.paymentsService.changePayment(event.target.checked, payment, monthCheckbox.monthNum);

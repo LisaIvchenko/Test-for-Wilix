@@ -1,11 +1,13 @@
-import {Component, OnInit} from '@angular/core';
-import {IPayment, months} from './data';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {PaymentsService} from './payments.service';
+import { Component, OnInit } from '@angular/core';
+import { IPayment, months } from './data';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { PaymentsService } from './payments.service';
+import { amountValidator } from './validators';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   public payments: IPayment[];
@@ -27,15 +29,15 @@ export class AppComponent implements OnInit {
         Validators.required,
       ]),
       price: new FormControl('', [
-        Validators.pattern(/^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/),
+        amountValidator(),
         Validators.required,
-      ])
+      ]),
     });
   }
 
   public getPayments(): void {
     this.paymentsService.getPayments().subscribe(
-      res => this.payments = res
+      res => this.payments = res,
     );
   }
 

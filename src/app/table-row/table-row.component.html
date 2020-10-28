@@ -3,6 +3,7 @@
   <td>{{ payment?.price }}</td>
   <td *ngFor="let monthCheckbox of payment?.months">
     <input type="checkbox"
+           class="change-payment-checkbox"
            [checked]="monthCheckbox.isPayed"
            (change)="changePayment($event, payment, monthCheckbox)">
   </td>
