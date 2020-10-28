@@ -56,7 +56,7 @@ describe('AppComponent', () => {
 
   it('компонент должен иметь метод ngOnInit', () => {
     const app = fixture.componentInstance;
-    expect(app.ngOnInit).toBeTruthy();
+    app.ngOnInit();
   });
 
   it('getPayments', () => {
