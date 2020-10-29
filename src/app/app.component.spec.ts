@@ -42,7 +42,10 @@ describe('AppComponent', () => {
         AppComponent,
       ],
       providers: [
-        {provide: PaymentsService, useValue: service},
+        {
+          provide: PaymentsService,
+          useValue: service,
+        },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(AppComponent);
@@ -55,44 +58,41 @@ describe('AppComponent', () => {
   });
 
   it('компонент должен иметь метод ngOnInit', () => {
-    const app = fixture.componentInstance;
-    app.ngOnInit();
-    expect(app.ngOnInit).toBeTruthy();
-  });
-
-  it('getPayments', () => {
-    const app = fixture.componentInstance;
-    app.getPayments();
-    expect(app.payments).toEqual(demoPayments);
-  });
-
-  it('getTotal', () => {
-    const app = fixture.componentInstance;
-    app.getTotal();
-    expect(app.total).toEqual(demoPayments.length);
-  });
-
-  it('createPayment', () => {
     // arrange
     const app = fixture.componentInstance;
 
-    app.formPayment.setValue({
-      title: '',
-      price: '123.123',
-    });
-    expect(app.formPayment.valid).toBeFalse();
+    // act
+    app.ngOnInit();
 
-    app.formPayment.setValue({
-      title: 'test',
-      price: '-1',
-    });
-    expect(app.formPayment.valid).toBeFalse();
+    // assert
+    expect(app.ngOnInit).toBeTruthy();
+  });
 
-    app.formPayment.setValue({
-      title: 'test',
-      price: 'test',
-    });
-    expect(app.formPayment.valid).toBeFalse();
+  it('getPayments возвращает payments', () => {
+    // arrange
+    const app = fixture.componentInstance;
+
+    // act
+    app.getPayments();
+
+    // assert
+    expect(app.payments).toEqual(demoPayments);
+  });
+
+  it('getTotal корректно считает сумму всех платежей', () => {
+    // arrange
+    const app = fixture.componentInstance;
+
+    // act
+    app.getTotal();
+
+    // assert
+    expect(app.total).toEqual(demoPayments.length);
+  });
+
+  it('createPayment создает запись при валидной форме', () => {
+    // arrange
+    const app = fixture.componentInstance;
 
     app.formPayment.setValue({
       title: 'Test',
@@ -111,12 +111,9 @@ describe('AppComponent', () => {
 
   });
 
-  it('createPayment', () => {
+  it('createPayment не создает запись при невалидной форме', () => {
     // arrange
     const app = fixture.componentInstance;
-
-    // assert
-
     app.formPayment.setValue({
       title: 'Test',
       price: '-1',

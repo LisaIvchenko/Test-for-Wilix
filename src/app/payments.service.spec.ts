@@ -228,7 +228,7 @@ describe('PaymentsService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('getPayments()', () => {
+  it('getPayments() возвращает Observable<IPayment[]>', () => {
     const payments: IPayment[] = [
       {
         title: 'Интернет',
@@ -345,11 +345,11 @@ describe('PaymentsService', () => {
     });
   });
 
-  it('countTotalOfPayment()', () => {
+  it('countTotalOfPayment() получает информацию о 12 месяцах оплаты конкретной услуги и корректно считает сумму платежей', () => {
     expect(service.countTotalOfPayment(dummyMonthsData, 2)).toBe(62);
   });
 
-  it('getTotal()', () => {
+  it('getTotal() корректно считает сумму всех платежей за все услуги', () => {
     const payments: IPayment[] = [
       {
         title: 'Интернет',
@@ -464,7 +464,7 @@ describe('PaymentsService', () => {
     expect(service.getTotal()).toBe(21700);
   });
 
-  it('deletePayment()', () => {
+  it('deletePayment() удаляет строку по имени', () => {
     const payments: IPayment[] = [
       {
         title: 'Интернет',
@@ -582,7 +582,7 @@ describe('PaymentsService', () => {
     expect(service.payments[0].title).toBe('TV');
   });
 
-  it('changePayment()', () => {
+  it('changePayment() изменяет значение заданного чекбокса', () => {
     const payments: IPayment[] = [
       {
         title: 'Интернет',
@@ -699,7 +699,7 @@ describe('PaymentsService', () => {
     expect(service.payments[0].months[0].isPayed).toBe(false);
   });
 
-  it('createPayment()', () => {
+  it('createPayment() создает новый платеж', () => {
     const payments: IPayment[] = [];
     service.payments = payments;
     service.total = 0;

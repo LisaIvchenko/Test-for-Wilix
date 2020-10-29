@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TableRowComponent } from './table-row.component';
-import { IMonthPayment, IPayment } from '../data';
+import { IPayment } from '../data';
 import { PaymentsService } from '../payments.service';
 import { EventEmitter } from '@angular/core';
 import { By } from '@angular/platform-browser';
@@ -137,10 +137,6 @@ describe('TableRowComponent', () => {
       .compileComponents();
     fixture = TestBed.createComponent(TableRowComponent);
     service = TestBed.inject(PaymentsService);
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(TableRowComponent);
     fixture.detectChanges();
   });
 
@@ -169,33 +165,42 @@ describe('TableRowComponent', () => {
     'должен вызываться метод changePayment, внутри которого происходит обращение к методу changePayment в service ' +
     'и срабатывает собстевнное событие updateTable',
     () => {
+      // arrange
       const component = fixture.componentInstance;
       component.payment = payment;
       fixture.detectChanges();
       spyOn(component, 'changePayment').and.callThrough();
-      spyOn(component?.updateTable, 'emit').and.callThrough();
+      spyOn(component.updateTable, 'emit').and.callThrough();
       const checkbox = fixture.debugElement.queryAll(By.css('input.change-payment-checkbox'))[0];
+
+      // act
       checkbox.nativeElement.click();
-      expect(component?.changePayment).toHaveBeenCalledTimes(1);
+
+      // assert
+      expect(component.changePayment).toHaveBeenCalledTimes(1);
       expect(service.changePayment).toHaveBeenCalledTimes(1);
-      expect(component?.updateTable.emit).toHaveBeenCalledTimes(1);
+      expect(component.updateTable.emit).toHaveBeenCalledTimes(1);
     });
 
   it('при нажатии на кнопку с селектором .delete-btn ' +
     'должен вызываться метод deletePayment, внутри которого происходит обращение к методу deletePayment в service ' +
     'и срабатывает собстевнное событие updateTable',
     () => {
+      // arrange
       const component = fixture.componentInstance;
       component.payment = payment;
       fixture.detectChanges();
       spyOn(component, 'deletePayment').and.callThrough();
-      // spyOn(service, 'deletePayment').and.callThrough();
-      spyOn(component?.updateTable, 'emit').and.callThrough();
+      spyOn(component.updateTable, 'emit').and.callThrough();
       const checkbox = fixture.debugElement.queryAll(By.css('.delete-btn'))[0];
+
+      // act
       checkbox.nativeElement.click();
-      expect(component?.deletePayment).toHaveBeenCalledTimes(1);
+
+      // assert
+      expect(component.deletePayment).toHaveBeenCalledTimes(1);
       expect(service.deletePayment).toHaveBeenCalledTimes(1);
-      expect(component?.updateTable.emit).toHaveBeenCalledTimes(1);
+      expect(component.updateTable.emit).toHaveBeenCalledTimes(1);
     });
 
 });
