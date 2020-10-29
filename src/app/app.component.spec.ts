@@ -75,6 +75,25 @@ describe('AppComponent', () => {
   it('createPayment', () => {
     // arrange
     const app = fixture.componentInstance;
+
+    app.formPayment.setValue({
+      title: '',
+      price: '123.123',
+    });
+    expect(app.formPayment.valid).toBeFalse();
+
+    app.formPayment.setValue({
+      title: 'test',
+      price: '-1',
+    });
+    expect(app.formPayment.valid).toBeFalse();
+
+    app.formPayment.setValue({
+      title: 'test',
+      price: 'test',
+    });
+    expect(app.formPayment.valid).toBeFalse();
+
     app.formPayment.setValue({
       title: 'Test',
       price: '123.123',
@@ -89,5 +108,24 @@ describe('AppComponent', () => {
       title: 'Test',
       price: '123.123',
     } as any);
+
+  });
+
+  it('createPayment', () => {
+    // arrange
+    const app = fixture.componentInstance;
+
+    // assert
+
+    app.formPayment.setValue({
+      title: 'Test',
+      price: '-1',
+    });
+
+    // act
+    app.createPayment();
+
+    // assert
+    expect(service.createdPayment).toBeUndefined();
   });
 });
