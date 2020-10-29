@@ -121,23 +121,6 @@ describe('TableRowComponent', () => {
     }
   ];
 
-  const trueEvent = {
-    target: {
-      checked: true,
-    },
-  };
-
-  const falseEvent = {
-    target: {
-      checked: false,
-    },
-  };
-
-  const monthPayment: IMonthPayment = {
-    monthNum: 1,
-    isPayed: false,
-  };
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [TableRowComponent],
