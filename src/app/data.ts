@@ -1,4 +1,5 @@
 export interface IPayment {
+  id: number;
   title: string;
   price: number;
   months: IMonthPayment[];
@@ -77,16 +78,17 @@ export const months = [
 
 export const payments: IPayment[] = [
   {
+    id: 0,
     title: 'Интернет',
     price: 600,
     months: [
       {
         monthNum: 1,
-        isPayed: false
+        isPayed: true
       },
       {
         monthNum: 2,
-        isPayed: true
+        isPayed: false
       },
       {
         monthNum: 3,
@@ -131,6 +133,7 @@ export const payments: IPayment[] = [
     ]
   },
   {
+    id: 1,
     title: 'TV',
     price: 100,
     months: [
@@ -140,7 +143,7 @@ export const payments: IPayment[] = [
       },
       {
         monthNum: 2,
-        isPayed: true
+        isPayed: false
       },
       {
         monthNum: 3,

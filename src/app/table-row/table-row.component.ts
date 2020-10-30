@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IMonthPayment, IPayment } from '../data';
 import { PaymentsService } from '../payments.service';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-table-row',
@@ -15,13 +16,13 @@ export class TableRowComponent {
   constructor(private paymentsService: PaymentsService) {
   }
 
-  public changePayment(event, payment: IPayment, monthCheckbox: IMonthPayment): void {
-    this.paymentsService.changePayment(event.target.checked, payment, monthCheckbox.monthNum);
+  public changePayment(id: number, monthNum: number): void {
+    this.paymentsService.changePayment(id, monthNum);
     this.updateTable.emit();
   }
 
-  public deletePayment(payment: IPayment): void {
-    this.paymentsService.deletePayment(payment);
+  public deletePayment(id: number): void {
+    this.paymentsService.deletePayment(id);
     this.updateTable.emit();
   }
 }

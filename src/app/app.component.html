@@ -25,10 +25,10 @@
       </th>
       <th>Удалить</th>
     </tr>
-    <app-table-row *ngFor="let payment of payments"
+    <app-table-row *ngFor="let payment of payments$ | async"
                    [payment]="payment"
-                   (updateTable)="updateTable()"></app-table-row>
+                   (updateTable)="getPayments()"></app-table-row>
   </table>
-  <span>Израсходовано средств: {{ total }}</span>
+  <span>Израсходовано средств: {{ total$ | async }}</span>
 </div>
 

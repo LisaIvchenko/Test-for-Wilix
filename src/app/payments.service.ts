@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
-import {Observable, of} from 'rxjs';
-import {IMonthPayment, IPayment, payments, emptyMonths} from './data';
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { IMonthPayment, IPayment, payments, emptyMonths } from './data';
 
 @Injectable({
   providedIn: 'root'
@@ -8,15 +8,14 @@ import {IMonthPayment, IPayment, payments, emptyMonths} from './data';
 export class PaymentsService {
 
   public total = 0;
-  public payments = payments;
-  public emptyMonths = emptyMonths;
+  public payments = [...payments];
 
   public getPayments(): Observable<IPayment[]> {
     return of(this.payments);
   }
 
-  public getTotal(): number {
-    return this.payments.reduce((acc, prev) => acc + this.countTotalOfPayment(prev.months, prev.price), 0);
+  public getTotal(): Observable<number> {
+    return of(this.payments.reduce((acc, prev) => acc + this.countTotalOfPayment(prev.months, prev.price), 0));
   }
 
   public countTotalOfPayment(monthsData: IMonthPayment[], price: number): number {
@@ -31,23 +30,35 @@ export class PaymentsService {
     return new Date(year, monthNumber, 0).getDate();
   }
 
-  public deletePayment(payment: IPayment): void {
-    this.total -= this.countTotalOfPayment(payment.months, payment.price);
-    this.payments = this.payments.filter(el => el.title !== payment.title);
+  public deletePayment(id: number): void {
+    this.payments = this.payments.filter(el => el.id !== id);
   }
 
-  public createPayment(formPayment: {title: string; price: number}): void {
-    const newPayment: IPayment = {...formPayment, months: this.emptyMonths};
+  public createPayment(formPayment: { title: string; price: number }): void {
+    let newId;
+    newId = Math.max.apply(Math, [...this.payments.map(o => o.id), 0]) + 1;
+
+    const falseMonths = new Array(12)
+      .fill({
+        monthNum: null,
+        isPayed: false,
+      })
+      .map((e, i) => {
+        return {
+          ...e,
+          monthNum: i + 1
+        };
+      });
+    const newPayment: IPayment = {...formPayment, id: newId, months: falseMonths};
     this.payments.push(newPayment);
   }
 
-  public changePayment(checkbox: boolean, payment: IPayment, monthNum: number): void {
-    const paymentIndex = this.payments.findIndex(obj => obj.title === payment.title);
-    const newMonthValue = {
-      isPayed: checkbox,
-      monthNum,
-    };
-    const changedMonth = payment.months.map(el => el.monthNum === monthNum ? newMonthValue : el);
-    this.payments[paymentIndex] = {...payment, months: changedMonth};
+  public changePayment(id: number, monthNum: number): void {
+    this.payments = this.payments.map(payment => {
+      if (payment.id === id) {
+        payment.months[monthNum - 1].isPayed = !payment.months[monthNum - 1].isPayed;
+      }
+      return payment;
+    });
   }
 }

@@ -5,10 +5,10 @@
     <input type="checkbox"
            class="change-payment-checkbox"
            [checked]="monthCheckbox.isPayed"
-           (change)="changePayment($event, payment, monthCheckbox)">
+           (change)="changePayment(payment.id, monthCheckbox.monthNum)">
   </td>
   <td>
     <button class="delete-btn"
-            (click)="deletePayment(payment)"></button>
+            (click)="deletePayment(payment.id)"></button>
   </td>
 </tr>

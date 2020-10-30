@@ -3,6 +3,7 @@ import { IPayment, months } from './data';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PaymentsService } from './payments.service';
 import { amountValidator } from './validators';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -10,20 +11,12 @@ import { amountValidator } from './validators';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  public payments: IPayment[];
+  public payments$: Observable<IPayment[]>;
   public months = months;
-  public total = 0;
+  public total$: Observable<number>;
   public formPayment: FormGroup;
 
   constructor(private paymentsService: PaymentsService) {
-    this.createForm();
-  }
-
-  public ngOnInit(): void {
-    this.updateTable();
-  }
-
-  public createForm(): void {
     this.formPayment = new FormGroup({
       title: new FormControl('', [
         Validators.required,
@@ -35,26 +28,18 @@ export class AppComponent implements OnInit {
     });
   }
 
-  public getPayments(): void {
-    this.paymentsService.getPayments().subscribe(
-      res => this.payments = res,
-    );
+  public ngOnInit(): void {
+    this.getPayments();
   }
 
-  public getTotal(): void {
-    this.total = this.paymentsService.getTotal();
+  public getPayments(): void {
+    this.payments$ = this.paymentsService.getPayments();
+    this.total$ = this.paymentsService.getTotal();
   }
 
   public createPayment(): void {
-    if (this.formPayment.valid) {
-      this.paymentsService.createPayment(this.formPayment.value);
-      this.formPayment.reset();
-    }
-    this.updateTable();
-  }
-
-  public updateTable(): void {
+    this.paymentsService.createPayment(this.formPayment.value);
+    this.formPayment.reset();
     this.getPayments();
-    this.getTotal();
   }
 }
