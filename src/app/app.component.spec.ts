@@ -1,25 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { Observable, of } from 'rxjs';
 import { IPayment, payments } from './data';
 import { PaymentsService } from './payments.service';
+import { Subject } from 'rxjs';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let service: MockService;
+  let app;
 
   let dummyPayments: IPayment[];
 
   class MockService {
+    paymentsChange$: Subject<IPayment[]> = new Subject<IPayment[]>();
+    public total: number;
+    public payments = [...payments];
+
     public createdPayment: IPayment;
-
-    public getPayments(): Observable<IPayment[]> {
-      return of(dummyPayments) as any;
-    }
-
-    public getTotal(): number {
-      return dummyPayments.length;
-    }
 
     public createPayment(data): void {
       this.createdPayment = data;
@@ -41,40 +38,26 @@ describe('AppComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(AppComponent);
     dummyPayments = [...payments];
+    app = fixture.componentInstance;
   });
 
-
   it('should create the app', () => {
-    const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
 
-  it('компонент должен иметь метод ngOnInit', () => {
-    // arrange
-    const app = fixture.componentInstance;
+  it('ngOnInit создает запись', () => {
+    spyOn(service, 'paymentsChange$').and.returnValue(of(response))
 
-    // act
     app.ngOnInit();
 
-    // assert
+    // spyOnProperty(service.paymentsChange$,  'subscribe', 'get').and.returnValue({})
+    expect(service.paymentsChange$.subscribe()).toHaveBeenCalled();
+    expect(app.payments).toBeDefined();
     expect(app.ngOnInit).toBeTruthy();
-  });
-
-  it('getPayments', () => {
-    // arrange
-    const app = fixture.componentInstance;
-
-    // act
-    app.getPayments();
-
-    // assert
-    expect(app.getPayments).toBeTruthy();
   });
 
   it('createPayment создает запись', () => {
     // arrange
-    const app = fixture.componentInstance;
-
     app.formPayment.setValue({
       title: 'Test',
       price: '123.123',
@@ -89,6 +72,5 @@ describe('AppComponent', () => {
       title: 'Test',
       price: '123.123',
     } as any);
-
   });
 });

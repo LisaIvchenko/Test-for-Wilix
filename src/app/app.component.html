@@ -25,10 +25,9 @@
       </th>
       <th>Удалить</th>
     </tr>
-    <app-table-row *ngFor="let payment of payments$ | async"
-                   [payment]="payment"
-                   (updateTable)="getPayments()"></app-table-row>
+    <app-table-row *ngFor="let payment of payments"
+                   [payment]="payment"></app-table-row>
   </table>
-  <span>Израсходовано средств: {{ total$ | async }}</span>
+  <span>Израсходовано средств: {{ total }}</span>
 </div>
 

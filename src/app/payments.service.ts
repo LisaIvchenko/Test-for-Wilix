@@ -1,64 +1,47 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { EventEmitter, Injectable } from '@angular/core';
+import { from, Observable, of, Subject } from 'rxjs';
 import { IMonthPayment, IPayment, payments, emptyMonths } from './data';
+import { countTotalOfPayment, generateFalseMonths, generateId } from './utils';
+import { concatMap, delay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PaymentsService {
 
-  public total = 0;
+  public total: number;
   public payments = [...payments];
+  paymentsChange$: Subject<IPayment[]> = new Subject<IPayment[]>();
 
-  public getPayments(): Observable<IPayment[]> {
-    return of(this.payments);
+  constructor() {
+    this.total = this.countTotal();
+    this.paymentsChange$.subscribe(value => {
+      this.payments = value;
+      this.total = this.countTotal();
+    });
   }
 
-  public getTotal(): Observable<number> {
-    return of(this.payments.reduce((acc, prev) => acc + this.countTotalOfPayment(prev.months, prev.price), 0));
-  }
-
-  public countTotalOfPayment(monthsData: IMonthPayment[], price: number): number {
-    return price * monthsData
-      .filter(el => el.isPayed)
-      .map(el => this.daysInMonth(el.monthNum))
-      .reduce((acc, curr) => acc + curr, 0);
-  }
-
-  public daysInMonth(monthNumber: number): number {
-    const year = new Date().getFullYear();
-    return new Date(year, monthNumber, 0).getDate();
+  public countTotal(): number {
+    return this.payments.reduce((acc, prev) => acc + countTotalOfPayment(prev.months, prev.price), 0);
   }
 
   public deletePayment(id: number): void {
-    this.payments = this.payments.filter(el => el.id !== id);
+    this.paymentsChange$.next(this.payments.filter(el => el.id !== id));
   }
 
   public createPayment(formPayment: { title: string; price: number }): void {
-    let newId;
-    newId = Math.max.apply(Math, [...this.payments.map(o => o.id), 0]) + 1;
-
-    const falseMonths = new Array(12)
-      .fill({
-        monthNum: null,
-        isPayed: false,
-      })
-      .map((e, i) => {
-        return {
-          ...e,
-          monthNum: i + 1
-        };
-      });
+    const newId = generateId(this.payments);
+    const falseMonths = generateFalseMonths();
     const newPayment: IPayment = {...formPayment, id: newId, months: falseMonths};
-    this.payments.push(newPayment);
+    this.paymentsChange$.next([...this.payments, newPayment]);
   }
 
   public changePayment(id: number, monthNum: number): void {
-    this.payments = this.payments.map(payment => {
+    this.paymentsChange$.next(this.payments.map(payment => {
       if (payment.id === id) {
         payment.months[monthNum - 1].isPayed = !payment.months[monthNum - 1].isPayed;
       }
       return payment;
-    });
+    }));
   }
 }
