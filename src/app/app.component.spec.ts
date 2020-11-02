@@ -8,13 +8,12 @@ describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let service: MockService;
   let app;
+  let paymentsService: PaymentsService;
 
   let dummyPayments: IPayment[];
 
   class MockService {
     paymentsChange$: Subject<IPayment[]> = new Subject<IPayment[]>();
-    public total: number;
-    public payments = [...payments];
 
     public createdPayment: IPayment;
 
@@ -36,6 +35,7 @@ describe('AppComponent', () => {
         },
       ],
     }).compileComponents();
+    paymentsService = TestBed.inject(PaymentsService);
     fixture = TestBed.createComponent(AppComponent);
     dummyPayments = [...payments];
     app = fixture.componentInstance;
@@ -45,15 +45,24 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it('ngOnInit создает запись', () => {
-    spyOn(service, 'paymentsChange$').and.returnValue(of(response))
-
+  it('ngOnInit()', () => {
     app.ngOnInit();
-
-    // spyOnProperty(service.paymentsChange$,  'subscribe', 'get').and.returnValue({})
-    expect(service.paymentsChange$.subscribe()).toHaveBeenCalled();
-    expect(app.payments).toBeDefined();
     expect(app.ngOnInit).toBeTruthy();
+  });
+
+  it('в ngOnInit() происходит подписка на payments и total', () => {
+    // act
+    app.ngOnInit();
+    paymentsService.paymentsChange$.next(payments);
+
+    // assert
+    paymentsService.paymentsChange$.subscribe(
+      res => {
+        expect(res).toEqual(dummyPayments);
+        expect(app.payments).toEqual(dummyPayments);
+        expect(paymentsService.total).toBeDefined();
+      }
+    );
   });
 
   it('createPayment создает запись', () => {
